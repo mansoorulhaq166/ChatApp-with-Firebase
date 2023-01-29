@@ -7,10 +7,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
 import android.util.Patterns;
 import android.view.View;
@@ -20,8 +22,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.basgeekball.awesomevalidation.AwesomeValidation;
+import com.basgeekball.awesomevalidation.ValidationHolder;
 import com.basgeekball.awesomevalidation.ValidationStyle;
 import com.basgeekball.awesomevalidation.utility.RegexTemplate;
+import com.basgeekball.awesomevalidation.utility.custom.CustomValidation;
+import com.basgeekball.awesomevalidation.utility.custom.SimpleCustomValidation;
 import com.example.chatappfirebase.Models.Users;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -43,12 +48,17 @@ public class RegisterActivity extends AppCompatActivity {
     EditText regName, regEmail, regPassword, regConPassword;
     Button regSubmit;
     TextView alreadyLogin;
+    ProgressDialog progressDialog;
     CircleImageView profileImage;
     FirebaseAuth auth;
     FirebaseDatabase database;
     FirebaseStorage storage;
     Uri imageUri;
     String imageUrl;
+    String regexPassword = ".{8,8}";
+
+//    String regexPassword = "(?=.*[a-z])(?=.*[A-Z])(?=.*[\\d])(?=.*[~`" +
+//            "!@#\\$%\\^&\\*\\(\\)\\-_\\+=\\{\\}\\[\\]\\|\\;:\"<>,./\\?]).{8,}";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +71,10 @@ public class RegisterActivity extends AppCompatActivity {
         regConPassword = findViewById(R.id.reg_confirm_password);
         regSubmit = findViewById(R.id.reg_submit);
         profileImage = (CircleImageView) findViewById(R.id.profile_image);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Please Wait..");
+        progressDialog.setCancelable(false);
 
         // Initializing Firebase instance
         auth = FirebaseAuth.getInstance();
@@ -77,9 +91,10 @@ public class RegisterActivity extends AppCompatActivity {
         mAwesomeValidation.addValidation(this, R.id.reg_email, Patterns.EMAIL_ADDRESS, R.string.err_email);
         mAwesomeValidation.addValidation(this, R.id.reg_name, RegexTemplate.NOT_EMPTY, R.string.err_name);
 
-        mAwesomeValidation.addValidation(this, R.id.reg_password,
-                "(?=.*[\\d])(?=.*[~`!@#\\$%\\^&\\*\\(\\)\\-_\\+=\\{\\}\\[\\]\\|\\;:\"<>,./\\?]).{8,}",
+        mAwesomeValidation.addValidation(this, R.id.reg_password, regexPassword,
                 R.string.err_password);
+        mAwesomeValidation.addValidation(this, R.id.reg_confirm_password, R.id.reg_password,
+                R.string.err_password_mismatch);
 
         mAwesomeValidation.addValidation(this, R.id.reg_password, RegexTemplate.NOT_EMPTY, R.string.error);
         mAwesomeValidation.addValidation(this, R.id.reg_confirm_password, RegexTemplate.NOT_EMPTY, R.string.error);
@@ -96,17 +111,21 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mAwesomeValidation.validate()) {
+                    //   if (regConPassword.equals(regPassword)) {
+                    progressDialog.show();
                     String name = regName.getText().toString();
                     String email = regEmail.getText().toString();
                     String password = regPassword.getText().toString();
                     String confirmPassword = regConPassword.getText().toString();
+                    String status = "Hey, there I'm using this Application!";
 
                     auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
+                                progressDialog.dismiss();
                                 DatabaseReference reference = database.getReference().child("user")
-                                        .child(auth.getUid());
+                                        .child(Objects.requireNonNull(auth.getUid()));
                                 StorageReference storageReference = storage.getReference().child("upload")
                                         .child(auth.getUid());
                                 if (imageUri != null) {
@@ -119,7 +138,7 @@ public class RegisterActivity extends AppCompatActivity {
                                                     public void onSuccess(Uri uri) {
                                                         imageUrl = uri.toString();
                                                         Users user = new Users(auth.getUid(), name, email,
-                                                                imageUrl);
+                                                                imageUrl, status);
                                                         reference.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task) {
@@ -137,9 +156,10 @@ public class RegisterActivity extends AppCompatActivity {
                                         }
                                     });
                                 } else {
+                                    String status = "Hey, there I'm using this Application!";
                                     imageUrl = "https://firebasestorage.googleapis.com/v0/b/chat-app-firebase-e531b.appspot.com/o/default.jpg?alt=media&token=b165b443-0524-4b07-808e-727c5170daf5";
                                     Users user = new Users(auth.getUid(), name, email,
-                                            imageUrl);
+                                            imageUrl, status);
                                     reference.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
@@ -155,6 +175,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 
                             } else {
+                                progressDialog.dismiss();
                                 Toast.makeText(RegisterActivity.this, "Something went Wrong", Toast.LENGTH_SHORT).show();
                             }
                         }

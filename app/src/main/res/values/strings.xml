@@ -9,7 +9,8 @@
     <string name="error">Field is required</string>
     <string name="err_email">Email is not Valid</string>
     <string name="err_name">Name is required</string>
-    <string name="err_password">At least 8 characters, must have one special and a number</string>
+    <string name="err_password">At least 8 characters</string>
     <string name="err_mobile">Mobile Number not valid</string>
+    <string name="err_password_mismatch">Password mismatch</string>
 
 </resources>
