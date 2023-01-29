@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Chat App Firebase</string>
+
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="login_button_text">Log In</string>
+    <string name="create_account">Create account</string>
+
+    <string name="error">Field is required</string>
+    <string name="err_email">Email is not Valid</string>
+    <string name="err_name">Name is required</string>
+    <string name="err_password">At least 8 characters, must have one special and a number</string>
+    <string name="err_mobile">Mobile Number not valid</string>
+
+</resources>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
+
+    <TextView
+        android:id="@+id/sign_in"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:text="Welcome Back"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/signin_report"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sign_in"
+        android:layout_marginTop="8dp"
+        android:alpha="0.8"
+        android:text="Sign In to Continue"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/enter_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/signin_report"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="95dp"
+        android:layout_marginRight="12dp"
+        android:background="@drawable/edit_text_bg"
+        android:drawableLeft="@drawable/person_outline"
+        android:drawablePadding="15dp"
+        android:hint="Enter the Email"
+        android:inputType="textEmailAddress"
+        android:padding="15dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/black"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/enter_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/enter_email"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="12dp"
+        android:background="@drawable/edit_text_bg"
+        android:drawableLeft="@drawable/baseline_security"
+        android:drawableRight="@drawable/password_show"
+
+        android:drawablePadding="15dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:padding="15dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/black"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/forgot_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/enter_password"
+        android:layout_alignRight="@id/enter_password"
+        android:layout_gravity="end"
+        android:layout_marginTop="25dp"
+        android:alpha="0.6"
+        android:text="Forgot Password?"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/button_login"
+        android:layout_width="160dp"
+        android:layout_height="60dp"
+        android:layout_below="@id/forgot_password"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/round_corner_button"
+        android:backgroundTint="@color/purple_700"
+        android:padding="8dp"
+        android:text="Login"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/sign_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/button_login"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:alpha="0.8"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>
