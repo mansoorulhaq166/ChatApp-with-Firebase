@@ -3,13 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/purple_500">
+    android:background="@color/purple_700">
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginLeft="45dp"
-        android:layout_marginRight="45dp"
-        android:src="@drawable/logo"
+        android:layout_height="150dp"
+        android:src="@drawable/wechat"
         android:layout_marginTop="200dp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Quick Chat App"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:textSize="28sp"
+        android:layout_marginTop="35dp" />
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="25dp"
+        />
 </LinearLayout>
