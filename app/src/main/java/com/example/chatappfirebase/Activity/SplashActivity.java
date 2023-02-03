@@ -8,17 +8,31 @@ import android.os.Handler;
 import android.widget.ProgressBar;
 
 import com.example.chatappfirebase.R;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+
+import java.util.Objects;
 
 public class SplashActivity extends AppCompatActivity {
 
-    ProgressBar progressBar;
+    FirebaseAuth auth;
+    FirebaseDatabase database;
+    FirebaseStorage storage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        progressBar = findViewById(R.id.progress_bar);
-        progressBar.getProgress();
+
+        auth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+        storage = FirebaseStorage.getInstance();
+
+        database.setPersistenceEnabled(true);
+
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -26,6 +40,6 @@ public class SplashActivity extends AppCompatActivity {
                 startActivity(new Intent(SplashActivity.this, LoginActivity.class));
                 finish();
             }
-        }, 3000);
+        }, 5000);
     }
 }

@@ -14,8 +14,10 @@ import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.util.Patterns;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,7 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
     EditText regName, regEmail, regPassword, regConPassword;
     Button regSubmit;
     TextView alreadyLogin;
-    ProgressDialog progressDialog;
+    ProgressBar progressBar;
     CircleImageView profileImage;
     FirebaseAuth auth;
     FirebaseDatabase database;
@@ -60,6 +62,7 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         alreadyLogin = findViewById(R.id.already_login);
         regEmail = findViewById(R.id.reg_email);
         regName = findViewById(R.id.reg_name);
@@ -67,19 +70,16 @@ public class RegisterActivity extends AppCompatActivity {
         regConPassword = findViewById(R.id.reg_confirm_password);
         regSubmit = findViewById(R.id.reg_submit);
         profileImage = (CircleImageView) findViewById(R.id.profile_image);
-
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Please Wait..");
-        progressDialog.setCancelable(false);
-
+        progressBar = findViewById(R.id.progress_bar);
+        
         // Initializing Firebase instance
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
 
         // using underline texts
-        SpannableString already = new SpannableString("Already have an account? Login!");
-        already.setSpan(new UnderlineSpan(), 25, already.length(), 0);
+        SpannableString already = new SpannableString(getResources().getString(R.string.register_olg_member));
+        already.setSpan(new UnderlineSpan(), 0, already.length(), 0);
         alreadyLogin.setText(already);
 
         // using validation
@@ -107,8 +107,8 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mAwesomeValidation.validate()) {
-                    //   if (regConPassword.equals(regPassword)) {
-                    progressDialog.show();
+                    progressBar.setVisibility(View.VISIBLE);
+                    regSubmit.setVisibility(View.GONE);
                     String name = regName.getText().toString();
                     String email = regEmail.getText().toString();
                     String password = regPassword.getText().toString();
@@ -119,7 +119,7 @@ public class RegisterActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                progressDialog.dismiss();
+                                progressBar.setVisibility(View.GONE);
                                 DatabaseReference reference = database.getReference().child("user")
                                         .child(Objects.requireNonNull(auth.getUid()));
                                 StorageReference storageReference = storage.getReference().child("upload")
@@ -171,7 +171,8 @@ public class RegisterActivity extends AppCompatActivity {
 
 
                             } else {
-                                progressDialog.dismiss();
+                               progressBar.setVisibility(View.GONE);
+                               regSubmit.setVisibility(View.VISIBLE);
                                 Toast.makeText(RegisterActivity.this, "Something went Wrong", Toast.LENGTH_SHORT).show();
                             }
                         }

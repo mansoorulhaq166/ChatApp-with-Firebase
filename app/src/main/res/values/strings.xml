@@ -13,5 +13,14 @@
     <string name="err_password">At least 8 characters</string>
     <string name="err_mobile">Mobile Number not valid</string>
     <string name="err_password_mismatch">Password mismatch</string>
+    <string name="def_status">Hey, there! I am using this Chat Application</string>
+
+    <!-- Activity Register -->
+    <string name="register_page_title">Welcome!</string>
+    <string name="register_page_subtitle">Create your account to start!</string>
+    <string name="register_olg_member">Already registered ?</string>
+    <string name="register_button">Register</string>
+    <string name="register_continue_with">- Or Register with -</string>
+    <string name="no_account_sign_up">Sign Up!</string>
 
 </resources>

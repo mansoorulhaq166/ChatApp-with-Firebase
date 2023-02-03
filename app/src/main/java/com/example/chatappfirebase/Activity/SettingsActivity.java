@@ -5,11 +5,15 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -39,7 +43,6 @@ public class SettingsActivity extends AppCompatActivity {
 
     CircleImageView setting_profile;
     EditText settingName, settingStatus;
-    ImageView save;
     String email;
     FirebaseAuth firebaseAuth;
     ProgressDialog progressDialog;
@@ -52,12 +55,15 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Settings");
+        setSupportActionBar(toolbar);
+
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
 
         setting_profile = findViewById(R.id.settings_profile_img);
-        save = findViewById(R.id.save);
         settingName = findViewById(R.id.settings_name);
         settingStatus = findViewById(R.id.settings_status);
 
@@ -89,69 +95,6 @@ public class SettingsActivity extends AppCompatActivity {
 
             }
         });
-
-        save.setOnClickListener(view -> {
-            String newsStatus = settingStatus.getText().toString();
-            String newName = settingName.getText().toString();
-
-            if (setImageURI != null) {
-                progressDialog.show();
-                storageReference.putFile(setImageURI).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                String finalImageUri = uri.toString();
-                                Users users = new Users(firebaseAuth.getUid(), newName, email, finalImageUri, newsStatus);
-
-                                reference.setValue(users).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(SettingsActivity.this, "Successfully Updated", Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(SettingsActivity.this, HomeActivity.class));
-                                            progressDialog.dismiss();
-                                        } else
-                                            Toast.makeText(SettingsActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
-                                        progressDialog.dismiss();
-
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
-            } else {
-                progressDialog.show();
-                storageReference.putFile(setImageURI).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                String finalImageUri = uri.toString();
-                                Users users = new Users(firebaseAuth.getUid(), newName, email, finalImageUri, newsStatus);
-
-                                reference.setValue(users).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(SettingsActivity.this, "Successfully Updated", Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(SettingsActivity.this, HomeActivity.class));
-                                            progressDialog.dismiss();
-                                        } else
-                                            Toast.makeText(SettingsActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
-                                            progressDialog.dismiss();
-
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-        });
         setting_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -174,4 +117,107 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                 }
             });
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.settings_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.options_rate:
+                saveSettings();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void saveSettings() {
+        final String newsStatus = settingStatus.getText().toString();
+        final String newName = settingName.getText().toString();
+
+        if (!newsStatus.isEmpty() && !newName.isEmpty()) {
+            progressDialog.show();
+            final DatabaseReference reference = firebaseDatabase.getReference().child("user").child(Objects.requireNonNull(firebaseAuth.getUid()));
+            final StorageReference storageReference = firebaseStorage.getReference().child("upload").child(firebaseAuth.getUid());
+
+            if (setImageURI != null) {
+                storageReference.putFile(setImageURI).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String finalImageUri = uri.toString();
+                                reference.child("name").setValue(newName);
+                                reference.child("status").setValue(newsStatus);
+                                reference.child("imageUri").setValue(finalImageUri).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(SettingsActivity.this, "Successfully Updated", Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(SettingsActivity.this, HomeActivity.class));
+                                        } else {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(SettingsActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            } else {
+                reference.child("name").setValue(newName);
+                reference.child("status").setValue(newsStatus).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            progressDialog.dismiss();
+                            Toast.makeText(SettingsActivity.this, "Data updated Successfully!", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(SettingsActivity.this, HomeActivity.class));
+                        } else {
+                            progressDialog.dismiss();
+                            Toast.makeText(SettingsActivity.this, "Data not updated", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        }
+    }
 }
+
+// Old Method
+/*
+
+  if(setImageURI!=null){
+          storageReference.putFile(setImageURI).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>(){
+@Override
+public void onComplete(@NonNull Task<UploadTask.TaskSnapshot>task){
+        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>(){
+@Override
+public void onSuccess(Uri uri){
+        String finalImageUri=uri.toString();
+        Users users=new Users(firebaseAuth.getUid(),newName,email,finalImageUri,newsStatus);
+
+        reference.setValue(users).addOnCompleteListener(new OnCompleteListener<Void>(){
+@Override
+public void onComplete(@NonNull Task<Void> task){
+        if(task.isSuccessful()){
+        Toast.makeText(SettingsActivity.this,"Successfully Updated",Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(SettingsActivity.this,HomeActivity.class));
+        progressDialog.dismiss();
+        }else{
+        progressDialog.dismiss();
+        Toast.makeText(SettingsActivity.this,"Something Went Wrong",Toast.LENGTH_SHORT).show();
+        }
+        }
+        });
+        }
+        });
+        }
+        });*/

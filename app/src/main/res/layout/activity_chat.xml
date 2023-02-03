@@ -62,6 +62,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
+                android:inputType="textNoSuggestions"
+                android:background="@null"
                 android:hint="Type your message..."
                 android:padding="8dp"
                 android:textSize="18sp" />

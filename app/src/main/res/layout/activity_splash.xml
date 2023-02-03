@@ -1,28 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/purple_700">
+    android:background="@color/colorPrimaryDark"
+    android:orientation="vertical">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:src="@drawable/wechat"
-        android:layout_marginTop="200dp" />
+        android:layout_marginTop="200dp"
+        android:src="@drawable/wechat" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Quick Chat App"
-        android:textColor="@color/white"
+        android:layout_marginTop="20dp"
         android:gravity="center"
-        android:textSize="28sp"
-        android:layout_marginTop="35dp" />
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins500"
+        android:text="Quick Chat"
+        android:textColor="@color/white"
+        android:textSize="28sp" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animation_view"
+        android:layout_width="match_parent"
+        android:layout_height="135dp"
         android:layout_gravity="center"
-        android:layout_marginTop="25dp"
-        />
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="25dp"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="false"
+        app:lottie_rawRes="@raw/progress_bar" />
 </LinearLayout>

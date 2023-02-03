@@ -17,7 +17,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.basgeekball.awesomevalidation.AwesomeValidation;
 import com.basgeekball.awesomevalidation.ValidationStyle;
@@ -31,11 +33,12 @@ import com.google.firebase.auth.FirebaseAuth;
 public class LoginActivity extends AppCompatActivity {
 
     TextView forgotPassword;
-    TextView signUp, sign_report;
+    TextView signUp;
     EditText email, password;
     Button login;
     FirebaseAuth auth;
     ProgressDialog progressDialog;
+    ProgressBar progressBar;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -44,10 +47,10 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         forgotPassword = (TextView) findViewById(R.id.forgot_password);
         signUp = (TextView) findViewById(R.id.sign_up);
-        sign_report = (TextView) findViewById(R.id.signin_report);
         email = (EditText) findViewById(R.id.enter_email);
         login = findViewById(R.id.button_login);
         password = (EditText) findViewById(R.id.enter_password);
+        progressBar = findViewById(R.id.login_progress_bar);
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Please Wait..");
@@ -87,8 +90,8 @@ public class LoginActivity extends AppCompatActivity {
         forget.setSpan(new UnderlineSpan(), 0, forget.length(), 0);
         forgotPassword.setText(forget);
 
-        SpannableString sign_up = new SpannableString("Don't have an account, Sign Up!");
-        sign_up.setSpan(new UnderlineSpan(), 23, sign_up.length(), 0);
+        SpannableString sign_up = new SpannableString(getResources().getString(R.string.no_account_sign_up));
+        sign_up.setSpan(new UnderlineSpan(), 0, sign_up.length(), 0);
         signUp.setText(sign_up);
 
         signUp.setOnClickListener(new View.OnClickListener() {
@@ -105,7 +108,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mAwesomeValidation.validate()) {
-                    progressDialog.show();
+                    progressBar.setVisibility(View.VISIBLE);
+                    login.setVisibility(View.GONE);
                     String StEmail = email.getText().toString();
                     String StPassword = password.getText().toString();
 
@@ -113,13 +117,13 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                progressDialog.dismiss();
                                 startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                                 finish();
+                                progressBar.setVisibility(View.GONE);
                             } else {
-                                sign_report.setText("Error in Login");
-                                sign_report.setTextColor(getResources().getColor(R.color.red));
-                                progressDialog.dismiss();
+                                Toast.makeText(LoginActivity.this, "Error in Login", Toast.LENGTH_SHORT).show();
+                                progressBar.setVisibility(View.GONE);
+                                login.setVisibility(View.VISIBLE);
                             }
                         }
                     });
